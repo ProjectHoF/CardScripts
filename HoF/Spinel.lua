@@ -357,20 +357,6 @@ function Duel.RegisterEffect(e,tp,forced,...)
 	dregeff(e,tp,forced,...)
 end
 
-UnlimitChain={}
-
-local dschlim=Duel.SetChainLimit
-function Duel.SetChainLimit(f)
-	dschlim(function(e,ep,tp)
-		for _,te in pairs(UnlimitChain) do
-			if e==te then
-				return true
-			end
-		end
-		return f(e,ep,tp)
-	end)
-end
-
 --이하 안쓰는거
 
 --EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP
