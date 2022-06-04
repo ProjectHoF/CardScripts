@@ -80,6 +80,13 @@ function Fusion.ParseMaterialTable(tab,mat)
 			if SatoneFusionFilter and SatoneFusionFilter(c,SatoneFusionEffect,SatoneFusionPlayer) then
 				return true
 			end
+			local fp=fc:GetControler()
+			if Duel.IsPlayerAffectedByEffect(fp,18453322) then
+				local fatt=Duel.ReadCard(val[i],CARDDATA_ATTRIBUTE)
+				if c:IsFusionAttribute(fatt) then
+					return true
+				end
+			end
 			return func(c,fc,sumtype,tp,sub,mg,sg,contact)
 		end
 	end
@@ -128,6 +135,13 @@ function Fusion.AddProcMix(c,sub,insf,...)
 			fun[i]=function(c,fc,sub,sub2,mg,sg,tp,contact,sumtype)
 				if SatoneFusionFilter and SatoneFusionFilter(c,SatoneFusionEffect,SatoneFusionPlayer) then
 					return true
+				end
+				local fp=fc:GetControler()
+				if Duel.IsPlayerAffectedByEffect(fp,18453322) then
+					local fatt=Duel.ReadCard(val[i],CARDDATA_ATTRIBUTE)
+					if c:IsFusionAttribute(fatt) then
+						return true
+					end
 				end
 				return c:IsSummonCode(fc,sumtype,fc:GetControler(),val[i]) or (sub and c:CheckFusionSubstitute(fc)) or (sub2 and c:IsHasEffect(511002961))
 			end
@@ -202,7 +216,11 @@ function Fusion.ConditionMix(insf,sub,...)
 					if mfm>1 then
 						for i=1,mfm-1 do
 							local token=GlobalMultipleFusionTokens[tp][#mfg+1]
-							token:SetEntityCode(mc:GetCode())
+							if IREDO_COMES_TRUE then
+								token:SetEntityCode(mc:GetCode())
+							else
+								token:Recreate(mc:GetCode())
+							end
 							GlobalMultipleFusionTable[token]=mc
 							mfg:AddCard(token)
 						end
@@ -263,7 +281,11 @@ function Fusion.OperationMix(insf,sub,...)
 					if mfm>1 then
 						for i=1,mfm-1 do
 							local token=GlobalMultipleFusionTokens[tp][#mfg+1]
-							token:SetEntityCode(mc:GetCode())
+							if IREDO_COMES_TRUE then
+								token:SetEntityCode(mc:GetCode())
+							else
+								token:Recreate(mc:GetCode())
+							end
 							GlobalMultipleFusionTable[token]=mc
 							mfg:AddCard(token)
 						end
@@ -394,6 +416,13 @@ function Fusion.AddProcMixRep(c,sub,insf,fun1,minc,maxc,...)
 			fun[i]=function(c,fc,sub,sub2,mg,sg,tp,contact,sumtype)
 				if SatoneFusionFilter and SatoneFusionFilter(c,SatoneFusionEffect,SatoneFusionPlayer) then
 					return true
+				end
+				local fp=fc:GetControler()
+				if Duel.IsPlayerAffectedByEffect(fp,18453322) then
+					local fatt=Duel.ReadCard(val[i],CARDDATA_ATTRIBUTE)
+					if c:IsFusionAttribute(fatt) then
+						return true
+					end
 				end
 				return c:IsSummonCode(fc,sumtype,fc:GetControler(),val[i]) or (sub and c:CheckFusionSubstitute(fc)) or (sub2 and c:IsHasEffect(511002961))
 			end

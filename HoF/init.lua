@@ -176,3 +176,4 @@ function Card.RegisterEffect(c,e,forced,...)
 	end
 	cregeff(c,e,forced,...)
 end
+--dofile("expansions/script/RDD.lua")
