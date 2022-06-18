@@ -1466,7 +1466,8 @@ function Card.RegisterEffect(c,e,forced,...)
 			Duel.DisableShuffleCheck()
 			Duel.Remove(g,POS_FACEDOWN,REASON_COST)
 		end)
-	elseif code==84211599 and mt.eff_ct[c][0]==e then
+	elseif code==84211599 and mt.eff_ct[c][0]==e
+		and IREDO_COMES_TRUE then
 		e:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
 			local g=Duel.GetMatchingGroup(Card.IsAbleToRemoveAsCost,tp,LOCATION_EXTRA,0,nil,POS_FACEDOWN)
 			local count=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
@@ -1945,3 +1946,5 @@ local dregeff=Duel.RegisterEffect
 function Duel.RegisterEffect(e,p,...)
 	dregeff(e,p,...)
 end
+
+--dofile("expansions/script/proc_bakuado.lua")
