@@ -26,6 +26,8 @@ function s.initial_effect(c)
 	e2:SetOperation(s.spop)
 	e2:SetLabelObject(e1)
 	c:RegisterEffect(e2)
+	if not GhostBelleTable then GhostBelleTable={} end
+	table.insert(GhostBelleTable,e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_DESTROYED)
@@ -61,7 +63,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		aux.Stringid(id,3)
 	)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectMatchingCard(tp,aux.disfilter2,tp,0,LOCATION_ONFIELD,0,1,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.disfilter3,tp,0,LOCATION_ONFIELD,0,1,nil)
 	if #g>0 then
 		local tc=g:GetFirst()
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
@@ -90,6 +92,7 @@ function s.setfilter(c)
 end
 function s.tar3(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
+	if ft>2 then ft=2 end
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and s.setfilter(chkc) end
 	if chk==0 then return ft>0
 		and Duel.IsExistingTarget(s.setfilter,tp,LOCATION_GRAVE,0,1,nil) end
