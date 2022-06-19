@@ -1,7 +1,7 @@
 --CytusII BM(Black Market) Lv.15 Blow My Mind(tpz Overheat Remix)
 function c112600033.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,4,2,c112600033.ovfilter,aux.Stringid(112600033,0),99,c112600033.xyzop)
+	Xyz.AddProcedure(c,nil,4,2,c112600033.ovfilter,aux.Stringid(112600033,0),99,c112600033.xyzop)
 	c:EnableReviveLimit()
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -29,12 +29,13 @@ function c112600033.initial_effect(c)
 	e2:SetOperation(c112600033.posop)
 	c:RegisterEffect(e2)
 end
-function c112600033.ovfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x1e7e) and not c:IsCode(112600033)
+function c112600033.ovfilter(c,tp,lc)
+	return c:IsFaceup() and c:IsSetCard(0x1e7e,lc,SUMMON_TYPE_XYZ,tp) and not c:IsSummonCode(lc,SUMMON_TYPE_XYZ,tp,112600033)
 end
 function c112600033.xyzop(e,tp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,112600033)==0 end
 	Duel.RegisterFlagEffect(tp,112600033,RESET_PHASE+PHASE_END,0,1)
+	return true
 end
 function c112600033.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
