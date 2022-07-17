@@ -1,4 +1,5 @@
---Yggdrago the Heavenly Emperor Dragon Tree
+--天帝龍樹ユグドラゴ
+--Yggdrago the Sky Emperor
 Duel.LoadCardScript("c160202011.lua")
 local s,id=GetID()
 function s.initial_effect(c)
@@ -27,5 +28,5 @@ function s.indcon(e)
 	return e:GetHandler():IsMaximumMode()
 end
 function s.indval(e,re,rp)
-	return re:IsActiveType(TYPE_TRAP)
+	return re:IsActiveType(TYPE_TRAP) and aux.indoval(e,re,rp)
 end

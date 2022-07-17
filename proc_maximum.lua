@@ -67,7 +67,7 @@ end
 --that function check if you can maximum summon the monster and its other part(s)
 function Maximum.Condition(mats)
 	local ct=#mats
-	return  function(e,c,og)
+	return function(e,c,og)
 		if c==nil then return true end
 		local tp=c:GetControler()
 		if not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_MAXIMUM,tp,false,false,POS_FACEUP_ATTACK) then return false end
@@ -295,33 +295,37 @@ function Card.HasDefense(c)
 end
 
 --functions to handle counting monsters but without the side Maximum monsters (the L/R max monsters are subtracted from the count)
-function Duel.GetMatchingGroupCountRush(f,tp,LOCP1,LOCP2,exclude)
-	local maxi=Duel.GetMatchingGroupCount(aux.FilterMaximumSideFunction(f),tp,LOCP1,LOCP2,exclude)
-	return Duel.GetMatchingGroupCount(f,tp,LOCP1,LOCP2,exclude)-maxi
+function Duel.GetMatchingGroupCountRush(f,tp,LOCP1,LOCP2,exclude,...)
+	local maxi=Duel.GetMatchingGroupCount(aux.FilterMaximumSideFunction(f,...),tp,LOCP1,LOCP2,exclude)
+	return Duel.GetMatchingGroupCount(f,tp,LOCP1,LOCP2,exclude,...)-maxi
 end
 --function that return only the side monsters
 function Auxiliary.FilterMaximumSideFunction(f,...)
 	local params={...}
-	return 	function(target)
+	return function(target)
 				return target:IsMaximumModeSide() and f(target,table.unpack(params))
 			end
 end
 --function that exclude L/R Maximum Mode
 function Auxiliary.FilterMaximumSideFunctionEx(f,...)
 	local params={...}
-	return 	function(target)
-				 return 
-				 ((not target:IsMaximumMode()) or (not (target:IsMaximumMode() and not target:IsMaximumModeCenter())))
-				 and f(target,table.unpack(params))
+	return function(target)
+				return
+				((not target:IsMaximumMode()) or (not (target:IsMaximumMode() and not target:IsMaximumModeCenter())))
+				and f(target,table.unpack(params))
 			end
+end
+--function used only in Duel.GetFieldGroupCountRush because the old implementation did not want to work
+function Maximum.GroupCountFunction(c)
+	return ((not c:IsMaximumMode()) or (not (c:IsMaximumMode() and not c:IsMaximumModeCenter()))) 
 end
 -- function that return the count of a location P1 et P2 minus the Maximum Side
 function Duel.GetFieldGroupCountRush(player, p1, p2)
 	return Duel.GetMatchingGroupCount(Maximum.GroupCountFunction,player,p1,p2,nil)
 end
---function used only in Duel.GetFieldGroupCountRush because the old implementation did not wanted to work
-function Maximum.GroupCountFunction(c)
-	return ((not c:IsMaximumMode()) or (not (c:IsMaximumMode() and not c:IsMaximumModeCenter()))) 
+--Function that returns the same as GetMatchingGroup, but removes L/R Maximum mode monsters from the group
+function Duel.GetMatchingGroupRush(f,player,loc1,loc2,exc,...)
+	return Duel.GetMatchingGroup(Auxiliary.FilterMaximumSideFunctionEx(f,...),player,loc1,loc2,exc)
 end
 --function that add every parts of the Maximum Mode monster to the group
 function Group.AddMaximumCheck(group)
@@ -583,8 +587,16 @@ end
 
 --Double tribute handler
 FLAG_NO_TRIBUTE=160001029
-function Card.AddDoubleTribute(c,id,otfilter,eftg)
-	c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+FLAG_DOUBLE_TRIB=160009052 --Executie up
+FLAG_DOUBLE_TRIB_DRAGON=160402002 --righteous dragon
+FLAG_DOUBLE_TRIB_FIRE=160007025 --dododo second
+FLAG_DOUBLE_TRIB_WINGEDBEAST=160005033 --blasting bird
+FLAG_DOUBLE_TRIB_LIGHT=160414001 --ultimate flag beast surge bicorn
+FLAG_DOUBLE_TRIB_MACHINE=160414002
+function Card.AddDoubleTribute(c,id,otfilter,eftg,reset,...)
+	for i,flag in ipairs{...} do
+		c:RegisterFlagEffect(flag,reset,0,1)
+	end
 	local e1=aux.summonproc(c,true,true,1,1,SUMMON_TYPE_TRIBUTE,aux.Stringid(id,0),otfilter)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
@@ -592,11 +604,32 @@ function Card.AddDoubleTribute(c,id,otfilter,eftg)
 	e2:SetTargetRange(LOCATION_HAND,0)
 	e2:SetTarget(eftg)
 	e2:SetLabelObject(e1)
-	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	if not reset==0 then e2:SetReset(reset) end
 	c:RegisterEffect(e2)
 end
 function aux.DoubleTributeCon(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsPlayerAffectedByEffect(tp,FLAG_NO_TRIBUTE)
+end
+--function to check if the monster have the flag for double tribute (used in otfilter)
+function Card.CanBeDoubleTribute(c,...)
+	if c:GetFlagEffect(FLAG_DOUBLE_TRIB)~=0 then return false end
+	local totalFlags=0
+	for i,flag in ipairs{...} do
+		totalFlags=totalFlags+flag
+		if c:GetFlagEffect(flag)~=0 then return false end
+	end
+	if c:GetFlagEffect(totalFlags)~=0 then return false end
+	return true
+end
+--function to check if the monster can get the corresponding double tribute flags
+--explanation: you can use Executie up on a monster like Rightous dragon that used its own effect to become a double tribute for dragon, it then become usable as 2 tribute for any monsters not just dragon
+--but the opposite scenario don't work, if you used executie up on a Righteous dragon making it a double tribute for any monster, you can't activate righteous dragon effect
+function Card.IsDoubleTribute(c,...)
+	--check for each individual flag
+	for i,flag in ipairs{...} do
+		if c:GetFlagEffect(flag)==0 then return false end
+	end
+	return true
 end
 function Card.AddNoTributeCheck(c,id,stringid,rangeP1,rangeP2)
 	local e1=Effect.CreateEffect(c)

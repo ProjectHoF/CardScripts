@@ -1,4 +1,5 @@
--- 最強旗獣カノンライノ Saikyo Flag Beast Rhino Cannon
+-- 最強旗獣カノンライノ
+-- Ultimate Flag Beast Cannon Rhino
 local s,id=GetID()
 function s.initial_effect(c)
 	-- Give Piercing effect
@@ -20,14 +21,14 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return 
-		Duel.IsExistingMatchingCard(aux.FilterFaceupFunction(s.cfilter),tp,LOCATION_MZONE,0,1,nil) 
+		Duel.IsExistingMatchingCard(aux.FilterFaceupFunction(s.cfilter),tp,LOCATION_MZONE,0,1,nil)
 	end
 end
 function s.filter(c)
 	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_MACHINE) and c:IsAbleToGraveAsCost()
 end
 function s.cfilter(c)
-	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_MACHINE) and c:IsFaceup()
+	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_MACHINE) and not c:IsHasEffect(EFFECT_CANNOT_ATTACK)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	-- Requirement

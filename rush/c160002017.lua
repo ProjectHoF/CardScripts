@@ -1,5 +1,5 @@
 --ライトニング・ボルコンドル
---Lightning Bolcondor
+--Lightning Voltcondor
 local s,id=GetID()
 function s.initial_effect(c)
 	--ATK change
@@ -32,7 +32,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetMatchingGroup(s.atkfilter,tp,0,LOCATION_MZONE,nil,og:GetAttribute())
 		if g and #g>0 then
 			local lv=og:GetLevel()
-			for sc in aux.Next(g) do
+			for sc in g:Iter() do
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_UPDATE_ATTACK)

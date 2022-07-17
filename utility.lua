@@ -631,9 +631,9 @@ function Auxiliary.cannotmatfilter(val1,...)
 	return function(e,c,sumtype,tp)
 		local sum=tot&sumtype
 		for _,val in pairs(allowed) do
-			if sum==val then return 1 end
+			if sum==val then return true end
 		end
-		return 0
+		return false
 	end
 end
 --effects inflicting damage to tp
@@ -1686,6 +1686,10 @@ function Auxiliary.SelectEffect(tp,...)
     end
     if #eff==0 then return nil end
     return sel[Duel.SelectOption(tp,table.unpack(eff))+1]
+end
+
+function Auxiliary.CheckPendulumZones(player)
+	return Duel.CheckLocation(player,LOCATION_PZONE,0) or Duel.CheckLocation(player,LOCATION_PZONE,1)
 end
 
 Duel.LoadScript("cards_specific_functions.lua")

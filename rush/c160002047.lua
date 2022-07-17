@@ -19,11 +19,7 @@ function s.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_POSITION,eg:GetFirst(),1,0,0)
-	Duel.SetChainLimit(s.chlimit)
-end
-function s.chlimit(e,ep,tp)
-	return not e:IsHasType(EFFECT_TYPE_ACTIVATE)
+	Duel.SetOperationInfo(0,CATEGORY_POSITION,eg:GetFirst(),1,tp,0)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	--Effect

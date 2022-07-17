@@ -1,5 +1,5 @@
 --ビックリード・ドラゴン
---Shocklead Dragon
+--Shock Dragon
 local s,id=GetID()
 function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
@@ -19,7 +19,7 @@ function s.filter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:GetAttack()>0
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,0,LOCATION_MZONE,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,0,LOCATION_MZONE,1,nil) end
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -28,16 +28,16 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	--effect
 	if c:IsRelateToEffect(e) and c:IsFaceup() then
 		local pg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
-		local og=Duel.GetMatchingGroup(s.filter,tp,0,LOCATION_MZONE,nil,tp)
+		local og=Duel.GetMatchingGroup(aux.FilterMaximumSideFunctionEx(s.filter),tp,0,LOCATION_MZONE,nil)
 		local _,atk=pg:GetMaxGroup(Card.GetAttack)
 		local sub1,_=og:GetMaxGroup(Card.GetAttack)
-		for tc in aux.Next(sub1) do
+		for tc in sub1:Iter() do
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
 			e1:SetValue(-atk)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e1)
+			tc:RegisterEffectRush(e1)
 		end
 		--atklimit
 		local e2=Effect.CreateEffect(c)
