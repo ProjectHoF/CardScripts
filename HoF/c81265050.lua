@@ -24,7 +24,7 @@ function c81265050.initial_effect(c)
 	e3:SetCode(EFFECT_DESTROY_REPLACE)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetTarget(c81265050.tg3)
-	e3:SetValue(c81265050.val)
+	e3:SetValue(c81265050.va3)
 	e3:SetOperation(c81265050.op3)
 	c:RegisterEffect(e3)
 end
@@ -68,17 +68,18 @@ end
 
 --파괴회피
 function c81265050.cfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0xc91) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0xc91) and c:IsLocation(0x04)
 	and c:IsControler(tp) and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function c81265050.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		return e:GetHandler():IsAbleToRemove() and eg:IsExists(c81265050.cfilter,1,nil,tp)
+		return eg:IsExists(c81265050.cfilter,1,nil,tp) and e:GetHandler():IsAbleToRemove()
 	end
 	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
 end
-function c81265050.op3(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_EFFECT)
+function c81265050.va3(e,c)
+	return c81265050.cfilter(c,e:GetHandlerPlayer())
 end
-
-
+function c81265050.op3(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_EFFECT+REASON_REPLACE)
+end
